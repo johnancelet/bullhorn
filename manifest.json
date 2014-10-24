@@ -1,0 +1,32 @@
+{
+   "browser_action": {
+      "default_icon": "images/foo.png",
+      "default_popup": "main.html",
+      "default_title": "Bullhorn DotMailer Gateway"
+   },
+   "description": "Send data from Bullhorn to DotMailer",
+   "icons": {
+      "16": "images/Icon-16.png",
+      "48": "images/Icon-48.png",
+      "64": "images/Icon-64.png"
+   },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["js/jquery-2.1.0.min.js", "js/content.js"],
+      "run_at": "document_end"
+    }
+  ],
+   "background": {
+     "scripts": ["js/jquery-2.1.0.min.js", "js/events.js"],
+     "persistent": false
+   },
+   "manifest_version": 2,
+   "minimum_chrome_version": "22.0",
+   "name": "Bullhorn DotMailer Gateway",
+   "options_page": "setup.html",
+   "permissions": [ "storage", "https://*.bullhornstaffing.com/" ],
+   "update_url": "https://clients2.google.com/service/update2/crx",
+   "version": "1.0.0",
+   "web_accessible_resources": [ "images/Icon-64.png" ]
+}
