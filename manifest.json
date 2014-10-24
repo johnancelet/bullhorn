@@ -18,7 +18,7 @@
     }
   ],
    "background": {
-     "scripts": ["js/jquery-2.1.0.min.js", "js/events.js"],
+     "scripts": ["js/jquery-2.1.0.min.js", "js/bullhorn.js", "js/dotmailer.js", "js/events.js"],
      "persistent": false
    },
    "manifest_version": 2,
