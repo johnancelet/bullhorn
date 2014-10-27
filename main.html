@@ -1,18 +1,31 @@
 <!doctype html>
 <html>
 <head>
-    <meta charset='UTF-8' />
+    <meta charset="UTF-8" />
     <link href="css/style.css" media="screen" rel="stylesheet" type="text/css" />
-    <meta content='IE=Edge,chrome=1' http-equiv='X-UA-Compatible' />
+    <meta content="IE=Edge,chrome=1" http-equiv="X-UA-Compatible" />
 </head>
 <body>
-<div class='sizewrap'>
-    <div class='content'>
-      <p>Currently selected <span id="distribution-list-name">nothing</span>.
-      <button type="submit" id="transfer">Transfer</button>
+  <div class='sizewrap'>
+    <div class="view login">
+      <form id="login-form">
+        <p>Login with dotmailer api credentials
+        <input id="login-username" type="text" placeholder="Email">
+        <input id="login-password" type="password" placeholder="Password">
+        <input id="login-submit" type="submit">
+      </form>
     </div>
-</div>
-<script src="js/jquery-2.1.0.min.js"></script>
-<script src="js/main.js"></script>
+
+    <div class="view content">
+      <p>Logged in as <span id="session-username">nobody</span>
+      <button type="submit" id="logout-button">Logout</button>
+      <p>Currently selected <span id="distribution-list-name">nothing</span>.
+      <button type="submit" id="submit-distribution-list">Transfer</button>
+    </div>
+  </div>
+
+  <script src="js/jquery-2.1.0.min.js"></script>
+  <script src="js/shared.js"></script>
+  <script src="js/main.js"></script>
 </body>
 </html>

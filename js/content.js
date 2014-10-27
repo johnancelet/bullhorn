@@ -1,39 +1,41 @@
-// Fetch the bullhorn rest-token from localstorage and
-// pass it to the background process.
-// TODO update these with window.on 'storage'
-chrome.runtime.sendMessage({
-  event: 'restToken',
-  data: {
-    token: JSON.parse(localStorage['BhRestToken'])
-  }
-});
+var CONTENT = {
+  initialize: function () {
+    CONTENT.storage.watch('BhRestToken', function (token) {
+      SHARED.storage.set('restToken', token);
+    }
 
-chrome.runtime.sendMessage({
-  event: 'privateLabel',
-  data: {
-    token: JSON.parse(localStorage['PrivateLabel'])
-  }
-});
+    CONTENT.storage.watch('PrivateLabel', function (label) {
+      SHARED.storage.set('privateLabel', label);
+    }
 
-// Keep the distribution list information (id, name) in the background
-// in sync with the front.
-function updateDistributionList (list) {
-  console.log('updateDistributionList', list)
-  chrome.storage.sync.set({lastDistributionList: list});
-};
+    CONTENT.storage.watch('PersonList', function (data) {
+      SHARED.storage.set('lastDistributionList', data.distributionList)
+    }
 
-function onStorage(event) {
-  console.log('onStorage', event.key);
-  if (event.key !== 'PersonList') {
-    return;
+    chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+      if (request.event === 'bullhornParameters') {
+        JSON.parse(localStorage['restToken'])
+        JSON.parse(localStorage['privateLabel'])
+        // TODO error handling
+        distributionList: JSON.parse(localStorage['PersonList']).distributionList;
+      }
+    })
+  },
+
+  storage: {
+    // Watch json values in local storage
+    watch: function (key, callback, useCapture) {
+      function wrappedCallback(value) {
+        callback(JSON.parse(value));
+      }
+
+      window.addEventListener('storage', function (event) {
+        if (event.key !== key) {
+          return;
+        }
+        wrappedCallback(event.newValue);
+      }, useCapture);
+      wrappedCallback(localStorage[key]);
+    }
   }
-  var list = JSON.parse(event.newValue).distributionList;
-  updateDistributionList(list);
 }
-
-window.addEventListener('storage', onStorage, false);
-
-if (localStorage['PersonList'] !== undefined) {
-  updateDistributionList(JSON.parse(localStorage['PersonList']));
-}
-

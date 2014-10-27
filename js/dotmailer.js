@@ -1,26 +1,49 @@
 var DM = {
   config: {
     host: 'https://api.dotmailer.com/v2',
-    apiToken: null
-  },
-
-  initialize: function () {
-    DM.config.apiToken = localStorage.get('dotmailerApiToken');
+    credentials: null
   },
 
   ajax: function (method, path, options) {
+    if (!DM.credentials) {
+      // TODO error code
+      throw new Error("Unauthorized");
+    }
+
     if (options === undefined) {
       options = {};
+    }
+
+    if (options.data === undefined) {
+      options.data = {};
     }
 
     options.method = method;
     options.url = DM.config.host + path;
 
-    // Check for apiToken
-    // Apply auth
-    // return $.ajax(options);
-    console.log("DM.ajax", options);
-    return;
+    options.data.username = DM.credentials.username;
+    options.data.password = DM.credentials.password;
+
+    return $.ajax(options);
+  },
+
+  authenticate: function (creds) {
+    creds ? DM.login(creds) : DM.logout();
+  },
+
+  login: function (email, password) {
+    DM.config.credentials = {
+      email: email,
+      password: password
+    };
+
+    return DM.ajax('GET', '/account-info', {
+      error: DM.logout
+    });
+  },
+
+  logout: function () {
+    DM.config.credentials = null;
   },
 
   addressBookId: function (id) {
@@ -56,3 +79,9 @@ var DM = {
   }
 
 }
+
+Object.defineProperty(DM, 'credentials', {
+  get: function() {
+    return chrome.storage.get:
+  }
+})

@@ -30,6 +30,7 @@ BH.ajax = function (method, path, options) {
   return $.ajax(options);
 }
 
+// Return a promise of an entire paginated resource in a 'reduce-y' fashion
 BH.ajaxPaginated = function (method, path, options, start, count, buffer) {
   if (start === undefined) {
     start = 0;
@@ -79,8 +80,6 @@ BH.ajaxPaginated = function (method, path, options, start, count, buffer) {
   return dfd.promise();
 }
 
-// Return a promise of an entire paginated resource
-// and fetch it iteratively
 BH.fetchDistributionList = function (listId) {
   var data = {
     // privateLabelId: BH.config.privateLabel,
