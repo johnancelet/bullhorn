@@ -1,30 +1,24 @@
-var CONTENT = {
-  init: function () {
-    SHARED.events.on('getBullhornParameters', function (data, sender, sendResponse) {
-      sendResponse(CONTENT.getBullhornParameters());
-    })
-  },
-
-  // TODO guard against parsing errors
-  getBullhornParameters: function () {
-    var params = {
-      config: {}
+(function () {
+  function getLocalSafe(key) {
+    try {
+      return JSON.parse(localStorage[key]);
+    } catch(err) {
+      return null;
     }
-
-    if (localStorage.PersonList) {
-      params.distributionList = JSON.parse(localStorage.PersonList).distributionList;
-    }
-
-    if (localStorage.PrivateLabel) {
-      params.config.privateLabel = JSON.parse(localStorage.PrivateLabel);
-    }
-
-    if (localStorage.BhRestToken) {
-      params.config.restToken = JSON.parse(localStorage.BhRestToken);
-    }
-
-    return params;
   }
-}
 
-$(CONTENT.init);
+  function getBullhornParameters() {
+    return {
+      distributionList: (getLocalSafe('PersonList') || {}).distributionList,
+      config: {
+        privateLabel: getLocalSafe('PrivateLabel'),
+        restToken: getLocalSafe('BhRestToken'),
+      }
+    }
+  }
+
+  SHARED.events.on('getBullhornParameters', function (data, sender, sendResponse) {
+    console.log(getBullhornParameters());
+    sendResponse(getBullhornParameters());
+  })
+})();

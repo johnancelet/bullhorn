@@ -1,6 +1,4 @@
 // Dotmailer is a singleton
-// The credentials are stored in local storage and the session is
-// kept up as long as they're there.
 var DM = {
   config: {
     host: 'https://api.dotmailer.com/v2',
@@ -55,7 +53,6 @@ var DM = {
     return DM
       .ajax('GET', '/address-books')
       .then(function (data) {
-        console.log('checking', data);
         // TODO find out whether this can be paginated
         // Look for an address book with matching name in the list of all
         for (i = 0; i < data.length; i++) {
@@ -63,7 +60,6 @@ var DM = {
             return data[i].id;
           }
         }
-        console.log('dit not find', name);
         return $.Deferred().reject(DM.errors.ADDRESS_BOOK_NOT_FOUND).promise();
       });
   },

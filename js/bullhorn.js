@@ -1,3 +1,4 @@
+// Return a Bullhorn api abstraction instance for given configuration.
 function Bullhorn(config) {
   var defaults = {
     host: 'https://cls2.bullhornstaffing.com',
@@ -12,7 +13,7 @@ function Bullhorn(config) {
 
   BH.ajax = function (method, path, options) {
     if (BH.config.restToken === undefined) {
-      return $.Deferred().reject(Bullhorn.errors.restTokenMissing).promise();
+      return $.Deferred().reject(Bullhorn.errors.REST_TOKEN_MISSING).promise();
     }
     options        = options || {};
     options.method = method;
@@ -49,6 +50,7 @@ function Bullhorn(config) {
 
   BH.fetchDistributionList = function (listId) {
     var data = {
+      // TODO what does this do? The app adds this to every request
       // privateLabelId: BH.config.privateLabel,
       where:            'isDeleted=false AND ' + listId + ' MEMBER OF distributionLists',
       fields:           'email',
@@ -64,5 +66,5 @@ function Bullhorn(config) {
 }
 
 Bullhorn.errors = {
-  restTokenMissing: 'rest token missing'
+  REST_TOKEN_MISSING: 'No restToken found for the Bullhorn API',
 }

@@ -13,7 +13,7 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["js/jquery-2.1.0.min.js", "js/shared.js", "js/content.js"],
+      "js": ["js/shared.js", "js/content.js"],
       "run_at": "document_end"
     }
   ],
