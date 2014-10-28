@@ -1,0 +1,23 @@
+body {
+  font-size: 16px;
+  margin: 20px;
+}
+
+button {
+  background-color: #6166dc;
+  border: 0;
+  outline: 0;
+  color: #fff;
+  padding: 18px;
+  display: block;
+  width: 100%;
+}
+
+button:hover {
+  background-color: #505a5f;
+}
+
+.distribution-list-name {
+  width: 100%;
+  text-align: center;
+}

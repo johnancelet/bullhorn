@@ -3,14 +3,11 @@ var SHARED = {
   events: {
 
     emit: function (type, data, callback) {
-      console.log('events.emit', type, data, !!callback);
       chrome.runtime.sendMessage({type: type, data: data}, callback);
     },
 
     on: function (type, callback) {
-      console.log('events.on', type, callback);
       chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-        console.log('LISTENERED')
         if (message.type === type) {
           callback(message.data, sender, sendResponse);
         }
@@ -57,6 +54,22 @@ var SHARED = {
           chrome.tabs.create({url: url});
         }
       })
+    }
+
+  },
+
+
+  notifications: {
+
+    create: function (name, options, callback) {
+      options         = options || {};
+      options.iconUrl = options.iconUrl || "images/foo.png";
+      options.type    = options.type || "basic";
+      options.title   = options.title || "Needs title!";
+      options.message = options.message || "Needs message!";
+      callback        = callback || function (id) {}
+      console.log("NOTIFICATION", arguments)
+      return chrome.notifications.create(name, options, callback);
     }
 
   }

@@ -45,14 +45,7 @@ var SANDBOX = {
 
   uploadContacts: function () {
     var name = $('#address-book-name').val() || SANDBOX.bullhornParameters.distributionList.id;
-
     DM.updateAddressBookByName(name, SANDBOX.contacts)
-      .then(function (data) {
-        console.log('GREAT SUCCESS');
-      })
-      .fail(function (err) {
-        console.log({err: err});
-      });
   }
 }
 

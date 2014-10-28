@@ -12,91 +12,57 @@ function Bullhorn(config) {
 
   BH.ajax = function (method, path, options) {
     if (BH.config.restToken === undefined) {
-      throw new Error("No rest token present!");
+      return $.Deferred().reject(Bullhorn.errors.restTokenMissing).promise();
     }
-
-    if (options === undefined) {
-      options = {};
-    }
-
-    if (options.data === undefined) {
-      options.data = {}
-    }
-
+    options        = options || {};
     options.method = method;
-    options.url = BH.config.host + path;
-
+    options.url    = BH.config.host + path;
+    options.data   = options.data || {};
     options.data.BhRestToken = BH.config.restToken;
-
-    console.log('BH.ajax', options);
-
     return $.ajax(options);
   }
 
   // Return a promise of an entire paginated resource in a 'reduce-y' fashion
   BH.ajaxPaginated = function (method, path, options, start, count, buffer) {
-    if (start === undefined) {
-      start = 0;
-    }
-
-    if (count === undefined) {
-      count = BH.config.pageSize;
-    }
-
-    if (options === undefined) {
-      options = {};
-    }
-
-    if (options.data === undefined) {
-      options.data = {};
-    }
-
-    if (buffer === undefined) {
-      buffer = [];
-    }
-
+    start              = start || 0;
+    count              = count || BH.config.pageSize;
+    options            = options || {};
+    options.data       = options.data || {};
     options.data.start = start;
     options.data.count = count;
+    buffer             = buffer || [];
 
-    var dfd = $.Deferred();
-
-    options.success = function (data) {
-      Array.prototype.push.apply(buffer, data.data);
-
-      console.log(data);
-
-      if (data.total === undefined || data.start + data.count >= data.total) {
-        dfd.resolve(buffer);
-      } else {
-        dfd.resolve(BH.ajaxPaginated(method, path, options, start + count, count, buffer));
-      }
-    }
-
-    options.error = function (xhr, ajaxOptions, thrownError) {
-      alert(xhr.status);
-      alert(thrownError);
-      dfd.reject(xhr.status);
-    }
-
-    BH.ajax(method, path, options);
-
-    return dfd.promise();
+    return BH
+      .ajax(method, path, options)
+      .then(function (data) {
+        Array.prototype.push.apply(buffer, data.data);
+        if (data.total === undefined || data.start + data.count >= data.total) {
+          return $.Deferred().resolve(buffer).promise();
+        } else {
+          return BH.ajaxPaginated(method, path, options, start + count, count, buffer);
+        }
+      })
+      .fail(function (xhr, ajaxOptions, thrownError) {
+        return xhr.status
+      });
   }
 
   BH.fetchDistributionList = function (listId) {
     var data = {
       // privateLabelId: BH.config.privateLabel,
-      fields: 'email',
-      orderBy: 'name',
-      where: 'isDeleted=false AND ' + listId + ' MEMBER OF distributionLists',
-      showTotalMatched: 'true',
-      showLabels: 'true'
+      where:            'isDeleted=false AND ' + listId + ' MEMBER OF distributionLists',
+      fields:           'email',
+      orderBy:          'name',
+      showLabels:       'true',
+      showTotalMatched: 'true'
     }
-
-    console.log({data: data});
 
     return BH.ajaxPaginated('GET', '/core/query/Person', {data: data});
   }
 
   return BH;
+}
+
+Bullhorn.errors = {
+  restTokenMissing: 'rest token missing'
 }

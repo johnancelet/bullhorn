@@ -25,7 +25,7 @@
   "minimum_chrome_version": "22.0",
   "name": "Bullhorn DotMailer Gateway",
   "options_page": "options.html",
-  "permissions": [ "storage", "https://*.bullhornstaffing.com/", "declarativeContent"],
+  "permissions": [ "storage", "https://*.bullhornstaffing.com/", "declarativeContent", "notifications"],
   "update_url": "https://clients2.google.com/service/update2/crx",
   "version": "1.0.0",
   "web_accessible_resources": [ "images/Icon-64.png" ]
