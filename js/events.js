@@ -1,22 +1,26 @@
-console.log('setting up events');
-
-// Use the rest token extracted from bullhorn local storage
-SHARED.events.on('restToken', function (data) {
-  BH.config.restToken = data.token;
-});
-
-// Update a dotmailer addressbook with bullhorn contacts
-SHARED.events.on('transferDistributionList', function (data) {
-
-
-  BH.fetchDistributionList(data.distributionList.id)
-    .then(function (contacts) {
-      DM.updateAddressBook(data.distributionList.id, contacts);
-    })
-});
-
-SHARED.storage.watch('dotmailerCredentials', DM.authenticate);
-
-chrome.runtime.onMessage.addListener(function (message, MessageSender, sendReponse) {
-  console.log('chrome.runtime.onMessage', message, MessageSender, sendReponse);
-});
+var EVENTS = {
+  init: function () {
+    SHARED.events.on('login', EVENTS.login)
+    SHARED.events.on('logout', EVENTS.logout)
+    SHARED.events.on('transferDistributionList', EVENTS.transferDistributionList)
+    SHARED.storage.watch('dotmailerCredentials', EVENTS.setDotmailerCredentials)
+  },
+  login: function (creds) {
+    chrome.storage.sync.set({dotmailerCredentials: creds});
+  },
+  logout: function () {
+    chrome.storage.sync.remove('dotmailerCredentials');
+  },
+  transferDistributionList: function (params) {
+    Bullhorn(params.config)
+      .fetchDistributionList(params.distributionList.id)
+      .then(DM.updateAddressBookByName.bind(null, params.distributionList.id))
+  },
+  setDotmailerCredentials: function (creds) {
+    if (creds) {
+      DM.login(creds).fail(EVENTS.logout);
+    } else {
+      DM.logout();
+    }
+  }
+}

@@ -1,41 +1,30 @@
 var CONTENT = {
-  initialize: function () {
-    CONTENT.storage.watch('BhRestToken', function (token) {
-      SHARED.storage.set('restToken', token);
-    }
-
-    CONTENT.storage.watch('PrivateLabel', function (label) {
-      SHARED.storage.set('privateLabel', label);
-    }
-
-    CONTENT.storage.watch('PersonList', function (data) {
-      SHARED.storage.set('lastDistributionList', data.distributionList)
-    }
-
-    chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-      if (request.event === 'bullhornParameters') {
-        JSON.parse(localStorage['restToken'])
-        JSON.parse(localStorage['privateLabel'])
-        // TODO error handling
-        distributionList: JSON.parse(localStorage['PersonList']).distributionList;
-      }
+  init: function () {
+    SHARED.events.on('getBullhornParameters', function (data, sender, sendResponse) {
+      sendResponse(CONTENT.getBullhornParameters());
     })
   },
 
-  storage: {
-    // Watch json values in local storage
-    watch: function (key, callback, useCapture) {
-      function wrappedCallback(value) {
-        callback(JSON.parse(value));
-      }
-
-      window.addEventListener('storage', function (event) {
-        if (event.key !== key) {
-          return;
-        }
-        wrappedCallback(event.newValue);
-      }, useCapture);
-      wrappedCallback(localStorage[key]);
+  // TODO guard against parsing errors
+  getBullhornParameters: function () {
+    var params = {
+      config: {}
     }
+
+    if (localStorage.PersonList) {
+      params.distributionList = JSON.parse(localStorage.PersonList).distributionList;
+    }
+
+    if (localStorage.PrivateLabel) {
+      params.config.privateLabel = JSON.parse(localStorage.PrivateLabel);
+    }
+
+    if (localStorage.BhRestToken) {
+      params.config.restToken = JSON.parse(localStorage.BhRestToken);
+    }
+
+    return params;
   }
 }
+
+$(CONTENT.init);

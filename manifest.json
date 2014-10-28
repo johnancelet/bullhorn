@@ -1,7 +1,7 @@
 {
-   "browser_action": {
+   "page_action": {
       "default_icon": "images/foo.png",
-      "default_popup": "main.html",
+      "default_popup": "page_action.html",
       "default_title": "Bullhorn DotMailer Gateway"
    },
    "description": "Send data from Bullhorn to DotMailer",
@@ -13,20 +13,19 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["js/jquery-2.1.0.min.js", "js/shared", "js/content.js"],
+      "js": ["js/jquery-2.1.0.min.js", "js/shared.js", "js/content.js"],
       "run_at": "document_end"
     }
   ],
   "background": {
-     "scripts": ["js/jquery-2.1.0.min.js", "js/shared.js", "js/bullhorn.js", "js/dotmailer.js", "js/events.js"],
-     "persistent": false
+    "scripts": ["js/jquery-2.1.0.min.js", "js/shared.js", "js/bullhorn.js", "js/dotmailer.js", "js/events.js", "js/background.js"],
+    "persistent": false
   },
-
   "manifest_version": 2,
   "minimum_chrome_version": "22.0",
   "name": "Bullhorn DotMailer Gateway",
-  "options_page": "setup.html",
-  "permissions": [ "storage", "https://*.bullhornstaffing.com/" ],
+  "options_page": "options.html",
+  "permissions": [ "storage", "https://*.bullhornstaffing.com/", "declarativeContent"],
   "update_url": "https://clients2.google.com/service/update2/crx",
   "version": "1.0.0",
   "web_accessible_resources": [ "images/Icon-64.png" ]
