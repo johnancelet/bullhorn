@@ -68,17 +68,20 @@ var SHARED = {
 
 
   notifications: {
-
     create: function (name, options, callback) {
       options         = options || {};
       options.iconUrl = options.iconUrl || "images/foo.png";
       options.type    = options.type || "basic";
       options.title   = options.title || "Needs title!";
       options.message = options.message || "Needs message!";
-      callback        = callback || function (id) {}
-
+      callback = callback || function (id) {}
       return chrome.notifications.create(name, options, callback);
-    }
+    },
+
+    update: function (name, options, callback) {
+     callback = callback || function (id) {}
+      return chrome.notifications.update(name, options, callback);
+    },
 
   }
 

@@ -24,7 +24,11 @@ var DM = {
     options.username = DM.config.credentials.username;
     options.password = DM.config.credentials.password;
 
-    return $.ajax(options);
+    return $.ajax(options)
+      .fail(function (xhr) {
+        // TODO something more descriptive?
+        return "Dotmailer API Error"
+      });
   },
 
   login: function (email, password) {
@@ -104,8 +108,10 @@ var DM = {
 
   // Takes an array of contact objects with at least an email field.
   updateAddressBook: function (id, contacts) {
+    var dfd = $.Deferred();
+
     if (contacts === undefined || !contacts.length) {
-      $.Deferred().reject(DM.errors.EMPTY_ADDRESS_BOOK).promise();
+      dfd.reject(DM.errors.EMPTY_ADDRESS_BOOK).promise();
     }
 
     var csv      = DM.contactsToCSV(contacts);
@@ -120,7 +126,32 @@ var DM = {
       processData: false
     };
 
-    return DM.ajax('POST', '/address-books/' + id + '/contacts/import', params);
+    return DM
+      .ajax('POST', '/address-books/' + id + '/contacts/import', params)
+      .then(function (data) {
+        return DM.reportUpdateAddressBookProgress(data.id);
+      })
+  },
+
+  reportUpdateAddressBookProgress: function (id, dfd) {
+    dfd = dfd || $.Deferred();
+
+    DM
+      .ajax('GET', '/contacts/import/' + id)
+      .then(function (data) {
+        console.log('progress', data);
+        if (data.status == 'Finished') {
+          dfd.resolve(DM.ajax('GET', '/contacts/import/' + id + '/report'))
+        } else {
+          dfd.notify(data.status);
+          setTimeout(DM.reportUpdateAddressBookProgress.bind(null, id, dfd), 200);
+        }
+      })
+      .fail(function (err) {
+        console.log('err', err);
+      })
+
+    return dfd
   },
 
   updateAddressBookByName: function (name, contacts) {
