@@ -83,6 +83,14 @@ var SHARED = {
       return chrome.notifications.update(name, options, callback);
     },
 
+    onButtonClicked: function (name, index, callback) {
+      chrome.notifications.onButtonClicked(function (notificationId, buttonIndex) {
+        if (notificationId === name || buttonIndex === index) {
+          callback()
+        }
+      })
+    },
+
   }
 
 

@@ -36,7 +36,7 @@ var EVENTS = {
     var BH = Bullhorn(params.config);
     var DM = Dotmailer();
 
-    var notification = EVENTS.notifications.Transfer(list);
+    var notification = EVENTS.notifications.Transfer(list, params);
     notification.start();
 
     DM.authenticate(EVENTS.state.dotmailerCredentials)
@@ -50,16 +50,21 @@ var EVENTS = {
       })
       .then(BH.fetchDistributionList.bind(null, list.id))
       .then(DM.updateAddressBookByName.bind(null, list.id))
-      .then(notification.success)
-      .fail(notification.error)
       .always(function () {
         delete EVENTS.state.transfers[list.id];
       })
+      .then(notification.success)
+      .fail(notification.error)
   },
 
   notifications: {
-    Transfer: function (list) {
+    Transfer: function (params) {
+      var list = params.distributionList;
+
       var id = 'transfer-' + list.id;
+
+      // Retry button
+      SHARED.onButtonClicked(id, 0, EVENTS.transferDistributionList.bind(null, params));
 
       return {
         id: id,
@@ -81,7 +86,7 @@ var EVENTS = {
             title: "Bullhorn to Dotmailer",
             buttons: [{title: 'Retry'}],
           })
-        }
+        },
       }
     }
   }
