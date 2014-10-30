@@ -1,11 +1,21 @@
 <!DOCTYPE html>
 <html>
-<head><title>My Test Extension Options</title></head>
+<head>
+  <title>Bullhorn DotMailer Gateway</title>
+  <link href="css/options.css" media="screen" rel="stylesheet" type="text/css" />
+</head>
 <body>
-<input id="username" type="text" placeholder="Email">
-<input id="password" type="password" placeholder="Password">
-<div id="status"></div>
-<button id="save" type="submit">save</button>
+  <div class="options-wrap">
+    <p>please enter your Dotmailer API credentials</p>
+    <form>
+      <label for="email">Email</label>
+      <input id="username" type="text" name="email">
+      <label for="password">Password</label>
+      <input id="password" type="password" name="password">
+      <div id="status" class="status"></div>
+      <button id="save" type="submit">save credentials</button>
+    </form>
+  </div>
 <a href="sandbox.html">Sandbox</a>
 <script src="js/jquery-2.1.0.min.js"></script>
 <script src="js/dotmailer.js"></script>

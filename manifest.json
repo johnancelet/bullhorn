@@ -1,14 +1,17 @@
 {
    "page_action": {
-      "default_icon": "images/foo.png",
+      "default_icon": {
+        "19": "images/icon-19.png",
+        "38": "images/icon-38.png"
+      },
       "default_popup": "page_action.html",
       "default_title": "Bullhorn DotMailer Gateway"
    },
    "description": "Send data from Bullhorn to DotMailer",
    "icons": {
-      "16": "images/Icon-16.png",
-      "48": "images/Icon-48.png",
-      "64": "images/Icon-64.png"
+      "16": "images/icon-16.png",
+      "48": "images/icon-48.png",
+      "64": "images/icon-64.png"
    },
   "content_scripts": [
     {
