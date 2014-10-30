@@ -25,7 +25,7 @@ input {
   color: #505a5f;
   margin: .2em 0 .8em;
   border: 2px solid #6166dc;
-  padding: .4em .4em;
+  padding: .4em;
   outline: 0;
 }
 
@@ -47,4 +47,23 @@ button {
 
 button:hover {
   background: #505a5f;
+}
+
+.status {
+  margin: -.6em 0 .4em;
+  padding: .2em .4em;
+  font-size: .8em;
+  font-weight: bold;
+}
+
+.status.positive {
+  border: 2px solid #26a826;
+  background: #daedda;
+  color: #259025;
+}
+
+.status.negative {
+  border: 2px solid #ed3c3c;
+  background: #ffdbdb;
+  color: #d30000;
 }
