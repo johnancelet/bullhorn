@@ -67,7 +67,6 @@ var EVENTS = {
           SHARED.notifications.create(id, {
             title: "Bullhorn to Dotmailer",
             message: "Transferring " + list.name,
-            iconUrl: "images/foo.png",
           })
         },
         success: function () {

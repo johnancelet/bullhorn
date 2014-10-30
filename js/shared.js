@@ -70,7 +70,7 @@ var SHARED = {
   notifications: {
     create: function (name, options, callback) {
       options         = options || {};
-      options.iconUrl = options.iconUrl || "images/foo.png";
+      options.iconUrl = options.iconUrl || "images/Icon-64.png";
       options.type    = options.type || "basic";
       options.title   = options.title || "Needs title!";
       options.message = options.message || "Needs message!";

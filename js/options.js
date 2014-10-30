@@ -1,11 +1,13 @@
 // Saves options to chrome.storage
-function saveOptions() {
-  var username = document.getElementById('username').value;
-  var password = document.getElementById('password').value;
+function saveOptions(event) {
+  event.preventDefault();
 
-  var status = document.getElementById('status');
+  var username = $('#username').val();
+  var password = $('#password').val();
+  var status = $('#status');
 
-  status.textContent = 'Busy...';
+  status.removeClass('negative positive');
+  status.text('Busy...');
 
   var creds = {
     username: username,
@@ -18,12 +20,16 @@ function saveOptions() {
       chrome.storage.sync.set({
         dotmailerCredentials: creds
       }, function () {
-        status.textContent = "You're all good to go now!";
+        status.text("You're all good to go now!");
+        status.addClass('positive');
+        status.removeClass('negative');
       });
     })
     .fail(function () {
       // chrome.storage.sync.remove('dotmailerCredentials');
-      status.textContent = "Something seems wrong with the credentials";
+      status.text("Something seems wrong with the credentials");
+        status.addClass('negative');
+        status.removeClass('positive');
     });
 
 }
@@ -31,14 +37,13 @@ function saveOptions() {
 // Restores select box and checkbox state using the preferences
 // stored in chrome.storage.
 function restoreOptions() {
-  console.log("RESTORE!")
   chrome.storage.sync.get({
     dotmailerCredentials: {}
   }, function (items) {
-    document.getElementById('username').value = items.dotmailerCredentials.username || '';
-    document.getElementById('password').value = items.dotmailerCredentials.password || '';
+    $('#username').val(items.dotmailerCredentials.username || '');
+    $('#password').val(items.dotmailerCredentials.password || '');
   });
 }
 
-document.addEventListener('DOMContentLoaded', restoreOptions);
-document.getElementById('save').addEventListener('click', saveOptions);
+$(restoreOptions);
+$('#save').on('click', saveOptions);
