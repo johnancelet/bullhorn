@@ -24,6 +24,7 @@ var DM = {
     options.username = DM.config.credentials.username;
     options.password = DM.config.credentials.password;
 
+
     return $.ajax(options)
       .fail(function (xhr) {
         // TODO something more descriptive?
@@ -31,9 +32,9 @@ var DM = {
       });
   },
 
-  login: function (email, password) {
+  login: function (username, password) {
     DM.config.credentials = {
-      email: email,
+      username: username,
       password: password
     };
 
@@ -43,6 +44,7 @@ var DM = {
   },
 
   logout: function () {
+    console.log('DM.logout', arguments)
     DM.config.credentials = null;
   },
 

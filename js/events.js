@@ -7,7 +7,9 @@ var EVENTS = {
     SHARED.events.on('login', EVENTS.login);
     SHARED.events.on('logout', EVENTS.logout);
     SHARED.events.on('transferDistributionList', EVENTS.transferDistributionList);
-    SHARED.storage.watch('dotmailerCredentials', EVENTS.setDotmailerCredentials);
+    SHARED.storage.watch('dotmailerCredentials', function (event) {
+      EVENTS.setDotmailerCredentials(event.newValue);
+    })
   },
 
   // The purpose of this extension. It takes a Bullhorn distribution
@@ -85,8 +87,9 @@ var EVENTS = {
     chrome.storage.sync.remove('dotmailerCredentials');
   },
   setDotmailerCredentials: function (creds) {
+    console.log('setDotmailerCredentials', creds);
     if (creds) {
-      DM.login(creds).fail(EVENTS.logout);
+      DM.login(creds.username, creds.password).fail(EVENTS.logout);
     } else {
       DM.logout();
     }
