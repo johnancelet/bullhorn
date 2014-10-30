@@ -12,6 +12,8 @@ var PAGE_ACTION = {
       }, PAGE_ACTION.updateBullhornParameters)
     });
 
+    // Keep track of dotmailer credentials to reflect on popup
+    // whether the user needs to enter them.
     SHARED.storage.watch('dotmailerCredentials', PAGE_ACTION.updateDotmailerCredentials);
 
     PAGE_ACTION.updateView();

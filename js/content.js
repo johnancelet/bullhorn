@@ -18,7 +18,6 @@
   }
 
   SHARED.events.on('getBullhornParameters', function (data, sender, sendResponse) {
-    console.log(getBullhornParameters());
     sendResponse(getBullhornParameters());
   })
 })();

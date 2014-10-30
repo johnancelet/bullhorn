@@ -1,15 +1,17 @@
 var EVENTS = {
   state: {
     transfers: {},
+    dotmailerCredentials: null
   },
 
   init: function () {
-    SHARED.events.on('login', EVENTS.login);
-    SHARED.events.on('logout', EVENTS.logout);
     SHARED.events.on('transferDistributionList', EVENTS.transferDistributionList);
-    SHARED.storage.watch('dotmailerCredentials', function (event) {
-      EVENTS.setDotmailerCredentials(event.newValue);
-    })
+    SHARED.storage.watch('dotmailerCredentials', EVENTS.setDotmailerCredentials);
+  },
+
+  // Keep the credentials in sync
+  setDotmailerCredentials: function (creds) {
+    EVENTS.state.dotmailerCredentials = creds;
   },
 
   // The purpose of this extension. It takes a Bullhorn distribution
@@ -22,8 +24,6 @@ var EVENTS = {
       return;
     }
 
-    var notification = 'transfer-' + list.id;
-
     // Only allow one transfer of a specific list at a time
     if (EVENTS.state.transfers[list.id]) {
       return;
@@ -33,66 +33,57 @@ var EVENTS = {
     //      but that would be too late.
     EVENTS.state.transfers[list.id] = true;
 
-    SHARED.notifications.create(notification, {
-      type: "progress",
-      title: "Bullhorn to Dotmailer",
-      message: "Transferring " + list.name,
-      iconUrl: "images/spinner.gif",
-    })
+    var BH = Bullhorn(params.config);
+    var DM = Dotmailer();
 
-    var flip = true;
+    var notification = EVENTS.notifications.Transfer(list);
+    notification.start();
 
-    Bullhorn(params.config)
-      .fetchDistributionList(list.id)
+    DM.authenticate(EVENTS.state.dotmailerCredentials)
+      .fail(function (arg) {
+        console.log('then', arg);
+        return arg;
+      })
+      .fail(function (arg) {
+        console.log('fail', arg);
+        return arg;
+      })
+      .then(BH.fetchDistributionList.bind(null, list.id))
       .then(DM.updateAddressBookByName.bind(null, list.id))
-      .progress(function () {
-        SHARED.notifications.update(notification, {
-          iconUrl: flip ? 'images/foo.png' : 'images/spinner.gif',
-        })
-        flip = !flip;
-      })
-      .then(function (report) {
-        SHARED.notifications.update(notification, {
-          type: "progress",
-          title: "Bullhorn to Dotmailer",
-          message: "Transfer of " + list.name + " was successful.",
-          contextMessage: JSON.stringify(report),
-          iconUrl: "images/foo.png",
-          progress: 100,
-        })
-      })
-      .fail(function (reason) {
-        SHARED.notifications.create(notification, {
-          message: "Transfer of " + list.name + " failed.",
-          contextMessage: JSON.stringify(reason),
-          title: "Bullhorn to Dotmailer",
-          iconUrl: "images/foo.png",
-          buttons: [{title: 'Retry'}],
-        })
-      })
+      .then(notification.success)
+      .fail(notification.error)
       .always(function () {
         delete EVENTS.state.transfers[list.id];
       })
-   },
+  },
 
-  // Dotmailer auth management
-  //
-  // The credentials are kept in local storage and synced with
-  // the dotmailer singleton. The session is considered up as long
-  // as they're there.
-  login: function (creds) {
-    chrome.storage.sync.set({dotmailerCredentials: creds});
-  },
-  logout: function () {
-    chrome.storage.sync.remove('dotmailerCredentials');
-  },
-  setDotmailerCredentials: function (creds) {
-    console.log('setDotmailerCredentials', creds);
-    if (creds) {
-      DM.login(creds.username, creds.password).fail(EVENTS.logout);
-    } else {
-      DM.logout();
+  notifications: {
+    Transfer: function (list) {
+      var id = 'transfer-' + list.id;
+
+      return {
+        id: id,
+        start: function () {
+          SHARED.notifications.create(id, {
+            title: "Bullhorn to Dotmailer",
+            message: "Transferring " + list.name,
+            iconUrl: "images/foo.png",
+          })
+        },
+        success: function () {
+          SHARED.notifications.update(id, {
+            message: "Transfer of " + list.name + " was successful.",
+          })
+        },
+        error: function (reason) {
+          SHARED.notifications.create(id, {
+            message: "Transfer of " + list.name + " failed.",
+            contextMessage: JSON.stringify(reason),
+            title: "Bullhorn to Dotmailer",
+            buttons: [{title: 'Retry'}],
+          })
+        }
+      }
     }
   }
-
 };

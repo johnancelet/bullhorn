@@ -3,27 +3,38 @@ function saveOptions() {
   var username = document.getElementById('username').value;
   var password = document.getElementById('password').value;
 
-  chrome.storage.sync.set({
-    dotmailerCredentials: {
-      username: username,
-      password: password
-    }
-  }, function() {
-    // Update status to let user know options were saved.
-    var status = document.getElementById('status');
-    status.textContent = 'Options saved.';
-    setTimeout(function() {
-      status.textContent = '';
-    }, 750);
-  });
+  var status = document.getElementById('status');
+
+  status.textContent = 'Busy...';
+
+  var creds = {
+    username: username,
+    password: password
+  }
+
+  Dotmailer()
+    .authenticate(creds)
+    .then(function () {
+      chrome.storage.sync.set({
+        dotmailerCredentials: creds
+      }, function () {
+        status.textContent = "You're all good to go now!";
+      });
+    })
+    .fail(function () {
+      // chrome.storage.sync.remove('dotmailerCredentials');
+      status.textContent = "Something seems wrong with the credentials";
+    });
+
 }
 
 // Restores select box and checkbox state using the preferences
 // stored in chrome.storage.
 function restoreOptions() {
+  console.log("RESTORE!")
   chrome.storage.sync.get({
     dotmailerCredentials: {}
-  }, function(items) {
+  }, function (items) {
     document.getElementById('username').value = items.dotmailerCredentials.username || '';
     document.getElementById('password').value = items.dotmailerCredentials.password || '';
   });
